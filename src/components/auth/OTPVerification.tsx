@@ -2,8 +2,16 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Box, Typography, Button, TextField, Grid } from '@mui/material';
+import { 
+  Box, 
+  Typography, 
+  Button, 
+  Grid, 
+  Paper,
+  IconButton
+} from '@mui/material';
 import { useAuth } from '@/hooks/useAuth';
+import { Backspace, ArrowBack } from '@mui/icons-material';
 
 interface OTPVerificationProps {
   method: 'phone' | 'email';
@@ -14,7 +22,7 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({ method, contactInfo }
   const router = useRouter();
   const { verifyOTP, resendOTP } = useAuth();
   const [otp, setOtp] = useState(['', '', '', '']);
-  const [focusedIndex, setFocusedIndex] = useState(0);
+  const [activeInput, setActiveInput] = useState(0);
   const [error, setError] = useState('');
   const [timeLeft, setTimeLeft] = useState(60);
   const [loading, setLoading] = useState(false);
@@ -26,29 +34,38 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({ method, contactInfo }
     }
   }, [timeLeft]);
 
-  const handleOtpChange = (index: number, value: string) => {
-    if (value.length > 1) {
-      value = value.charAt(0);
-    }
-
-    if (!/^\d*$/.test(value) && value !== '') {
-      return;
-    }
-
-    const newOtp = [...otp];
-    newOtp[index] = value;
-    setOtp(newOtp);
-
-    // Auto-focus next input if current input is filled
-    if (value && index < 3) {
-      setFocusedIndex(index + 1);
+  const handleNumpadClick = (num: number | string) => {
+    if (activeInput < 4) {
+      const newOtp = [...otp];
+      newOtp[activeInput] = num.toString();
+      setOtp(newOtp);
+      
+      // Move to next input if available
+      if (activeInput < 3) {
+        setActiveInput(activeInput + 1);
+      }
     }
   };
 
-  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
-      setFocusedIndex(index - 1);
+  const handleBackspace = () => {
+    if (activeInput > 0 || otp[0]) {
+      const newOtp = [...otp];
+      
+      // If current active input has a value, clear it first
+      if (newOtp[activeInput]) {
+        newOtp[activeInput] = '';
+      } else if (activeInput > 0) {
+        // Otherwise move back and clear previous
+        setActiveInput(activeInput - 1);
+        newOtp[activeInput - 1] = '';
+      }
+      
+      setOtp(newOtp);
     }
+  };
+
+  const handleOtpBoxClick = (index: number) => {
+    setActiveInput(index);
   };
 
   const handleResendOTP = async () => {
@@ -84,79 +101,170 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({ method, contactInfo }
   return (
     <Box
       sx={{
-        maxWidth: '400px',
         width: '100%',
-        p: 3,
-        backgroundColor: 'white',
-        borderRadius: 2,
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-        textAlign: 'center',
+        maxWidth: '400px',
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        py: 4,
+        px: 2,
       }}
     >
-      <Typography variant="h6" component="h2" mb={2}>
-        OTP Verification
-      </Typography>
+      {/* Header */}
+      <Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+          <IconButton 
+            onClick={() => router.back()}
+            sx={{ mr: 1, color: 'primary.main' }}
+          >
+            <ArrowBack />
+          </IconButton>
+          <Typography variant="h5" component="h1" fontWeight={600}>
+            OTP Verification
+          </Typography>
+        </Box>
 
-      <Typography variant="body2" mb={4} color="text.secondary">
-        Please enter the OTP (One Time Password) sent to your {method === 'phone' ? 'registered' : ''} {method}{' '}
-        {contactInfo && `(${contactInfo})`}. Please wait to confirm your verification.
-      </Typography>
-
-      {error && (
-        <Typography color="error" mb={2}>
-          {error}
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
+          Please enter the OTP (One-Time Password) sent to your {method === 'phone' ? 'registered' : ''} {method}{' '}
+          {contactInfo && `(${contactInfo})`} to complete your verification.
         </Typography>
-      )}
 
-      <Grid container spacing={2} justifyContent="center" mb={3}>
-        {otp.map((digit, index) => (
-          <Grid item key={index} xs={2.5}>
-            <TextField
-              autoFocus={index === focusedIndex}
-              value={digit}
-              onChange={(e) => handleOtpChange(index, e.target.value)}
-              onKeyDown={(e) => handleKeyDown(index, e)}
-              variant="outlined"
-              inputProps={{
-                maxLength: 1,
-                style: { textAlign: 'center', fontSize: '1.5rem' },
+        {error && (
+          <Typography color="error" textAlign="center" sx={{ mb: 2 }}>
+            {error}
+          </Typography>
+        )}
+
+        {/* OTP Input Boxes */}
+        <Grid container spacing={2} justifyContent="center" sx={{ mb: 4 }}>
+          {otp.map((digit, index) => (
+            <Grid item key={index}>
+              <Paper
+                elevation={0}
+                onClick={() => handleOtpBoxClick(index)}
+                sx={{
+                  width: '60px',
+                  height: '60px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 2,
+                  border: '1px solid',
+                  borderColor: activeInput === index ? 'primary.main' : 'divider',
+                  bgcolor: 'white',
+                  fontSize: '1.5rem',
+                  fontWeight: 'bold',
+                  color: 'text.primary',
+                  cursor: 'pointer',
+                }}
+              >
+                {digit}
+              </Paper>
+            </Grid>
+          ))}
+        </Grid>
+
+        <Box sx={{ textAlign: 'center', mb: 2 }}>
+          <Typography variant="body2" color="text.secondary">
+            Remaining time: {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
+          </Typography>
+          
+          <Button
+            variant="text"
+            color="primary"
+            disabled={timeLeft > 0}
+            onClick={handleResendOTP}
+            sx={{ textTransform: 'none', mt: 1 }}
+          >
+            Didn't get the code? Resend
+          </Button>
+        </Box>
+      </Box>
+
+      {/* Middle section - Verify button */}
+      <Button
+        variant="contained"
+        color="primary"
+        fullWidth
+        onClick={handleVerify}
+        disabled={otp.join('').length !== 4 || loading}
+        sx={{
+          py: 1.5,
+          borderRadius: 2,
+          textTransform: 'none',
+          fontSize: '1rem',
+          mb: 4,
+        }}
+      >
+        Verify
+      </Button>
+
+      {/* Custom Numpad */}
+      <Box 
+        sx={{ 
+          bgcolor: 'rgba(255, 255, 255, 0.5)',
+          backdropFilter: 'blur(10px)',
+          borderRadius: 4,
+          p: 2,
+        }}
+      >
+        <Grid container spacing={2} justifyContent="center">
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => (
+            <Grid item xs={4} key={num} sx={{ textAlign: 'center' }}>
+              <Button
+                onClick={() => handleNumpadClick(num)}
+                sx={{
+                  width: '60px',
+                  height: '60px',
+                  borderRadius: '50%',
+                  fontSize: '1.5rem',
+                  color: 'text.primary',
+                  bgcolor: 'rgba(255, 255, 255, 0.8)',
+                  '&:hover': {
+                    bgcolor: 'rgba(255, 255, 255, 0.9)',
+                  }
+                }}
+              >
+                {num}
+              </Button>
+            </Grid>
+          ))}
+          <Grid item xs={4} sx={{ textAlign: 'center' }}>
+            <Button
+              onClick={() => handleNumpadClick(0)}
+              sx={{
+                width: '60px',
+                height: '60px',
+                borderRadius: '50%',
+                fontSize: '1.5rem',
+                color: 'text.primary',
+                bgcolor: 'rgba(255, 255, 255, 0.8)',
+                '&:hover': {
+                  bgcolor: 'rgba(255, 255, 255, 0.9)',
+                }
               }}
-              sx={{ width: '100%' }}
-            />
+            >
+              0
+            </Button>
           </Grid>
-        ))}
-      </Grid>
-
-      <Typography variant="body2" mb={2} color="text.secondary">
-        Remaining time: {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
-      </Typography>
-
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          fullWidth
-          onClick={handleVerify}
-          disabled={otp.join('').length !== 4 || loading}
-          sx={{
-            py: 1.5,
-            borderRadius: 2,
-            textTransform: 'none',
-            backgroundColor: '#4361ee',
-          }}
-        >
-          {loading ? 'Verifying...' : 'Verify'}
-        </Button>
-
-        <Button
-          variant="text"
-          color="primary"
-          disabled={timeLeft > 0}
-          onClick={handleResendOTP}
-          sx={{ textTransform: 'none' }}
-        >
-          {timeLeft > 0 ? `Didn't get the code? Resend (${timeLeft}s)` : "Didn't get the code? Resend"}
-        </Button>
+          <Grid item xs={4} sx={{ textAlign: 'center' }}>
+            <IconButton
+              onClick={handleBackspace}
+              sx={{
+                width: '60px',
+                height: '60px',
+                color: 'text.secondary',
+                bgcolor: 'rgba(255, 255, 255, 0.8)',
+                '&:hover': {
+                  bgcolor: 'rgba(255, 255, 255, 0.9)',
+                }
+              }}
+            >
+              <Backspace />
+            </IconButton>
+          </Grid>
+        </Grid>
       </Box>
     </Box>
   );

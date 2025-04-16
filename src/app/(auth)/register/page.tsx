@@ -2,93 +2,78 @@
 'use client';
 
 import React from 'react';
-import { Box, Container, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 import RegisterForm from '@/components/auth/RegisterForm';
-import Link from 'next/link';
 
 export default function RegisterPage() {
   return (
     <Box
       sx={{
         minHeight: '100vh',
+        width: '100%',
         display: 'flex',
-        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
         background: 'linear-gradient(135deg, #e6f0ff 0%, #f0e8ff 100%)',
+        position: 'relative',
+        overflow: 'hidden',
+        p: 2,
       }}
     >
+      {/* Decorative glass background elements */}
       <Box
-        component="header"
         sx={{
-          py: 2,
-          px: 3,
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
+          position: 'absolute',
+          top: '10%',
+          left: '5%',
+          width: '30%',
+          height: '30%',
+          borderRadius: '50%',
+          background: 'rgba(255, 255, 255, 0.2)',
+          filter: 'blur(50px)',
+          zIndex: 0,
         }}
-      >
-        <Link href="/">
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              textDecoration: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            <Typography
-              variant="h4"
-              component="div"
-              sx={{
-                fontWeight: 700,
-                color: '#1a365d',
-              }}
-            >
-              Ed<span style={{ color: '#4361ee' }}>nux</span>
-            </Typography>
-          </Box>
-        </Link>
-        <Link href="/login">
-          <Box
-            sx={{
-              textDecoration: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            <Typography
-              variant="body1"
-              component="div"
-              sx={{
-                fontWeight: 600,
-                color: '#4361ee',
-                px: 3,
-                py: 1,
-                borderRadius: 2,
-                bgcolor: '#fff',
-                '&:hover': {
-                  bgcolor: '#f8f9fa',
-                },
-              }}
-            >
-              Login
-            </Typography>
-          </Box>
-        </Link>
-      </Box>
-
-      <Container
-        maxWidth={false}
+      />
+      
+      <Box
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexGrow: 1,
-          px: 2,
-          py: 4,
+          position: 'absolute',
+          bottom: '5%',
+          right: '10%',
+          width: '35%',
+          height: '35%',
+          borderRadius: '50%',
+          background: 'rgba(67, 97, 238, 0.15)',
+          filter: 'blur(60px)',
+          zIndex: 0,
+        }}
+      />
+      
+      <Box
+        sx={{
+          position: 'absolute',
+          top: '40%',
+          right: '25%',
+          width: '15%',
+          height: '15%',
+          borderRadius: '50%',
+          background: 'rgba(165, 110, 244, 0.1)',
+          filter: 'blur(30px)',
+          zIndex: 0,
+        }}
+      />
+      
+      {/* Main content */}
+      <Box
+        sx={{
+          position: 'relative',
+          zIndex: 1,
+          width: '100%',
+          maxWidth: '450px',
         }}
       >
         <RegisterForm />
-      </Container>
+      </Box>
     </Box>
   );
 }

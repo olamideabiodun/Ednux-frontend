@@ -1,12 +1,20 @@
 // src/components/auth/LoginForm.tsx
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, TextField, Box, Typography, InputAdornment, IconButton } from '@mui/material';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import GoogleIcon from '@mui/icons-material/Google';
+import { 
+  Button, 
+  TextField, 
+  Box, 
+  Typography, 
+  InputAdornment, 
+  IconButton,
+  Divider,
+  Paper
+} from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
+import GoogleIcon from '@mui/icons-material/Google';
 
 const LoginForm: React.FC = () => {
   const router = useRouter();
@@ -47,164 +55,202 @@ const LoginForm: React.FC = () => {
 
   return (
     <Box
-      component="form"
-      onSubmit={handleSubmit}
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        maxWidth: '400px',
         width: '100%',
-        p: 3,
-        backgroundColor: 'white',
-        borderRadius: 2,
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        maxWidth: '400px',
+        mx: 'auto',
       }}
     >
-      <Typography variant="h5" component="h1" textAlign="center" gutterBottom>
-        Glad to have you back again!
-      </Typography>
-      
-      <Typography variant="body1" textAlign="center" mb={4}>
-        Sign in to your account!
-      </Typography>
-
-      {error && (
-        <Typography color="error" mb={2} textAlign="center">
-          {error}
+      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
+        <Typography
+          variant="h4"
+          component="div"
+          sx={{
+            fontWeight: 700,
+            color: '#1a365d',
+          }}
+        >
+          Ed<span style={{ color: '#4361ee' }}>nux</span>
         </Typography>
-      )}
-
-      <TextField
-        label="Email"
-        type="email"
-        fullWidth
-        margin="normal"
-        variant="outlined"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <Box component="span" sx={{ color: 'action.active' }}>
-                ✉️
-              </Box>
-            </InputAdornment>
-          ),
-        }}
-      />
-
-      <TextField
-        label="Password"
-        type={showPassword ? 'text' : 'password'}
-        fullWidth
-        margin="normal"
-        variant="outlined"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <Box component="span" sx={{ color: 'action.active' }}>
-                🔒
-              </Box>
-            </InputAdornment>
-          ),
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton onClick={handleTogglePassword} edge="end">
-                {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
-      />
-
-      <Box sx={{ textAlign: 'right', mt: 1, mb: 2 }}>
-        <Link href="/forgot-password">
+        <Link href="/register">
           <Typography
-            component="span"
+            variant="body2"
             sx={{
               color: 'primary.main',
-              cursor: 'pointer',
-              textDecoration: 'none',
-              '&:hover': {
-                textDecoration: 'underline',
-              },
+              fontWeight: 600,
             }}
           >
-            Forgot password?
+            Sign up
           </Typography>
         </Link>
       </Box>
 
-      <Button
-        type="submit"
-        variant="contained"
-        color="primary"
-        size="large"
-        fullWidth
-        sx={{
-          py: 1.5,
-          mb: 2,
-          borderRadius: 2,
-          textTransform: 'none',
-          backgroundColor: '#4361ee',
-        }}
-        disabled={loading}
-      >
-        {loading ? 'Signing in...' : 'Log in'}
-      </Button>
+      <Box sx={{ mb: 6, textAlign: 'center' }}>
+        <Typography variant="h5" component="h1" sx={{ fontWeight: 600 }}>
+          Glad to have you back again!
+        </Typography>
+        
+        <Typography variant="body1" sx={{ mt: 1 }}>
+          Sign in to your account!
+        </Typography>
+      </Box>
 
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-        <Box sx={{ flex: 1, height: '1px', backgroundColor: 'divider' }} />
-        <Typography sx={{ mx: 2, color: 'text.secondary' }}>or</Typography>
-        <Box sx={{ flex: 1, height: '1px', backgroundColor: 'divider' }} />
+      <Paper
+        elevation={0}
+        sx={{
+          backgroundColor: 'rgba(255, 255, 255, 0.6)',
+          backdropFilter: 'blur(10px)',
+          borderRadius: 3,
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          p: 3,
+          mb: 3
+        }}
+      >
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          {error && (
+            <Typography color="error" sx={{ mb: 2 }}>
+              {error}
+            </Typography>
+          )}
+
+          <Typography variant="subtitle2" sx={{ mb: 1 }}>Email</Typography>
+          <TextField
+            type="email"
+            fullWidth
+            variant="outlined"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter your email"
+            required
+            InputProps={{
+              sx: { 
+                borderRadius: 2,
+                bgcolor: 'white',
+                mb: 2
+              }
+            }}
+          />
+
+          <Typography variant="subtitle2" sx={{ mb: 1 }}>Password</Typography>
+          <TextField
+            type={showPassword ? 'text' : 'password'}
+            fullWidth
+            variant="outlined"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Enter password"
+            required
+            InputProps={{
+              sx: { 
+                borderRadius: 2,
+                bgcolor: 'white'
+              },
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={handleTogglePassword} edge="end">
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+
+          <Box sx={{ textAlign: 'right', my: 2 }}>
+            <Link href="/forgot-password">
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'primary.main',
+                  fontWeight: 500,
+                }}
+              >
+                Forgot password?
+              </Typography>
+            </Link>
+          </Box>
+
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            disabled={loading}
+            sx={{
+              py: 1.5,
+              borderRadius: 2,
+              textTransform: 'none',
+              fontSize: '1rem',
+              boxShadow: 'none',
+              bgcolor: '#4361ee',
+            }}
+          >
+            Log In
+          </Button>
+        </Box>
+      </Paper>
+
+      <Box sx={{ textAlign: 'center', position: 'relative', my: 3 }}>
+        <Divider sx={{ position: 'absolute', top: '50%', left: 0, right: 0 }} />
+        <Typography 
+          variant="body2" 
+          sx={{ 
+            display: 'inline-block', 
+            position: 'relative', 
+            px: 2, 
+            bgcolor: 'rgba(230, 240, 255, 0.7)', 
+            backdropFilter: 'blur(5px)',
+            color: 'text.secondary' 
+          }}
+        >
+          or
+        </Typography>
       </Box>
 
       <Button
         variant="outlined"
-        color="primary"
-        size="large"
         fullWidth
         startIcon={<GoogleIcon />}
         onClick={handleGoogleLogin}
         sx={{
           py: 1.5,
-          mb: 3,
           borderRadius: 2,
           textTransform: 'none',
-          borderColor: '#DADCE0',
+          fontSize: '1rem',
+          borderColor: 'rgba(255, 255, 255, 0.5)',
+          bgcolor: 'rgba(255, 255, 255, 0.7)',
           color: '#3c4043',
           '&:hover': {
-            borderColor: '#DADCE0',
-            backgroundColor: 'rgba(0, 0, 0, 0.05)',
+            borderColor: 'rgba(255, 255, 255, 0.8)',
+            bgcolor: 'rgba(255, 255, 255, 0.9)',
           },
         }}
       >
         Sign in with Google
       </Button>
 
-      <Typography textAlign="center">
-        Don't have an account?{' '}
-        <Link href="/register">
-          <Typography
-            component="span"
-            sx={{
-              color: 'primary.main',
-              fontWeight: 600,
-              cursor: 'pointer',
-              textDecoration: 'none',
-              '&:hover': {
-                textDecoration: 'underline',
-              },
-            }}
-          >
-            Sign Up!
-          </Typography>
-        </Link>
-      </Typography>
+      <Box sx={{ textAlign: 'center', mt: 4 }}>
+        <Typography variant="body2" color="text.secondary">
+          Don't have an account?{' '}
+          <Link href="/register">
+            <Typography
+              component="span"
+              sx={{
+                color: 'primary.main',
+                fontWeight: 600,
+              }}
+            >
+              Sign Up
+            </Typography>
+          </Link>
+        </Typography>
+      </Box>
     </Box>
   );
 };

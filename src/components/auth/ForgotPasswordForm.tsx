@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, TextField, Box, Typography, InputAdornment } from '@mui/material';
+import { Button, TextField, Box, Typography, CircularProgress } from '@mui/material';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -37,18 +37,13 @@ const ForgotPasswordForm: React.FC = () => {
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        maxWidth: '400px',
         width: '100%',
-        p: 3,
-        backgroundColor: 'white',
-        borderRadius: 2,
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        position: 'relative',
+        backdropFilter: 'blur(10px)',
+        borderRadius: 3,
+        overflow: 'hidden',
       }}
     >
-      <Typography variant="h5" component="h1" textAlign="center" gutterBottom>
-        Forgot Password
-      </Typography>
-
       {error && (
         <Typography color="error" mb={2} textAlign="center">
           {error}
@@ -56,11 +51,17 @@ const ForgotPasswordForm: React.FC = () => {
       )}
 
       {success ? (
-        <Box sx={{ textAlign: 'center', my: 2 }}>
-          <Typography color="success.main" gutterBottom>
+        <Box sx={{ 
+          textAlign: 'center', 
+          my: 4,
+          p: 4,
+          backgroundColor: 'rgba(255, 255, 255, 0.3)',
+          borderRadius: 3,
+        }}>
+          <Typography color="success.main" gutterBottom fontWeight={600} variant="h6">
             Password reset email sent!
           </Typography>
-          <Typography variant="body2" mb={3}>
+          <Typography variant="body2" mb={4}>
             Please check your email for instructions to reset your password.
           </Typography>
           <Button
@@ -80,30 +81,36 @@ const ForgotPasswordForm: React.FC = () => {
           </Button>
         </Box>
       ) : (
-        <>
-          <Typography variant="body2" mb={3} textAlign="center">
+        <Box sx={{ 
+          backgroundColor: 'rgba(255, 255, 255, 0.3)',
+          backdropFilter: 'blur(10px)',
+          p: 4,
+          borderRadius: 3,
+        }}>
+          <Typography variant="body1" mb={3}>
             Enter your email and we'll send you a link to reset your password
           </Typography>
 
-          <TextField
-            label="Email"
-            type="email"
-            fullWidth
-            margin="normal"
-            variant="outlined"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Box component="span" sx={{ color: 'action.active' }}>
-                    ✉️
-                  </Box>
-                </InputAdornment>
-              ),
-            }}
-          />
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="body2" fontWeight={500} sx={{ mb: 1 }}>
+              Email
+            </Typography>
+            <TextField
+              type="email"
+              fullWidth
+              placeholder="Enter your email"
+              variant="outlined"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              InputProps={{
+                sx: { 
+                  borderRadius: 2,
+                  bgcolor: 'white' 
+                }
+              }}
+            />
+          </Box>
 
           <Button
             type="submit"
@@ -121,7 +128,7 @@ const ForgotPasswordForm: React.FC = () => {
             }}
             disabled={loading}
           >
-            {loading ? 'Sending...' : 'Reset Password'}
+            {loading ? <CircularProgress size={24} color="inherit" /> : 'Reset Password'}
           </Button>
 
           <Button
@@ -131,11 +138,15 @@ const ForgotPasswordForm: React.FC = () => {
             sx={{
               textTransform: 'none',
               mb: 2,
+              color: '#4361ee',
+              fontWeight: 500,
+              display: 'block',
+              mx: 'auto',
             }}
           >
             Back to Login
           </Button>
-        </>
+        </Box>
       )}
     </Box>
   );

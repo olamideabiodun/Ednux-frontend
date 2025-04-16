@@ -2,9 +2,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Box, Container, Typography } from '@mui/material';
+import { Box, Container } from '@mui/material';
 import OTPVerification from '@/components/auth/OTPVerification';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 export default function VerifyPage() {
@@ -49,54 +48,55 @@ export default function VerifyPage() {
     <Box
       sx={{
         minHeight: '100vh',
+        width: '100%',
         display: 'flex',
-        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
         background: 'linear-gradient(135deg, #e6f0ff 0%, #f0e8ff 100%)',
+        position: 'relative',
+        overflow: 'hidden',
       }}
     >
+      {/* Glass effect background elements */}
       <Box
-        component="header"
         sx={{
-          py: 2,
-          px: 3,
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
+          position: 'absolute',
+          top: '5%',
+          left: '10%',
+          width: '200px',
+          height: '200px',
+          borderRadius: '50%',
+          background: 'rgba(255, 255, 255, 0.2)',
+          filter: 'blur(30px)',
+          zIndex: 0,
         }}
-      >
-        <Link href="/">
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              textDecoration: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            <Typography
-              variant="h4"
-              component="div"
-              sx={{
-                fontWeight: 700,
-                color: '#1a365d',
-              }}
-            >
-              Ed<span style={{ color: '#4361ee' }}>nux</span>
-            </Typography>
-          </Box>
-        </Link>
-      </Box>
-
+      />
+      <Box
+        sx={{
+          position: 'absolute',
+          bottom: '10%',
+          right: '15%',
+          width: '180px',
+          height: '180px',
+          borderRadius: '50%',
+          background: 'rgba(67, 97, 238, 0.15)',
+          filter: 'blur(30px)',
+          zIndex: 0,
+        }}
+      />
+      
+      {/* Main content */}
       <Container
-        maxWidth={false}
+        maxWidth="sm"
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
           justifyContent: 'center',
-          flexGrow: 1,
-          px: 2,
-          py: 4,
+          alignItems: 'center',
+          position: 'relative',
+          zIndex: 1,
+          py: { xs: 4, sm: 6 },
+          px: { xs: 2, sm: 3 },
         }}
       >
         <OTPVerification method={method} contactInfo={contactInfo} />

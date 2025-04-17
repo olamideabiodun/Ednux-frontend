@@ -23,11 +23,15 @@ import {
   Search as SearchIcon,
   Person as PersonIcon,
   Logout as LogoutIcon,
-  Settings as SettingsIcon
+  Settings as SettingsIcon,
+  ChatBubble as ChatIcon,
+  Help as HelpIcon
 } from '@mui/icons-material';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import NotificationsPanel from '@/components/social/NotificationsPanel';
+import SearchPanel from '@/components/social/SearchPanel';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -65,14 +69,32 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 const Header: React.FC = () => {
   const { user, logout } = useAuth();
   const router = useRouter();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [profileAnchorEl, setProfileAnchorEl] = useState<null | HTMLElement>(null);
+  const [notificationsAnchorEl, setNotificationsAnchorEl] = useState<null | HTMLElement>(null);
+  const [searchAnchorEl, setSearchAnchorEl] = useState<null | HTMLElement>(null);
   
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
+    setProfileAnchorEl(event.currentTarget);
   };
 
   const handleMenuClose = () => {
-    setAnchorEl(null);
+    setProfileAnchorEl(null);
+  };
+
+  const handleNotificationsOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setNotificationsAnchorEl(event.currentTarget);
+  };
+
+  const handleNotificationsClose = () => {
+    setNotificationsAnchorEl(null);
+  };
+
+  const handleSearchOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setSearchAnchorEl(event.currentTarget);
+  };
+
+  const handleSearchClose = () => {
+    setSearchAnchorEl(null);
   };
 
   const handleLogout = async () => {
@@ -113,7 +135,10 @@ const Header: React.FC = () => {
         </Box>
 
         {/* Search */}
-        <Search sx={{ flexGrow: { xs: 1, md: 0 }, mx: { xs: 1, md: 4 } }}>
+        <Search 
+          sx={{ flexGrow: { xs: 1, md: 0 }, mx: { xs: 1, md: 4 } }}
+          onClick={handleSearchOpen}
+        >
           <StyledInputBase
             placeholder="Search..."
             startAdornment={
@@ -121,16 +146,40 @@ const Header: React.FC = () => {
                 <SearchIcon sx={{ color: '#4A5568', fontSize: '1.2rem' }} />
               </InputAdornment>
             }
+            readOnly
           />
         </Search>
 
         {/* Right side icons */}
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Tooltip title="Messages">
+            <IconButton 
+              color="inherit" 
+              sx={{ ml: 1 }}
+              component={Link}
+              href="/messages"
+            >
+              <Badge badgeContent={2} color="primary">
+                <ChatIcon />
+              </Badge>
+            </IconButton>
+          </Tooltip>
+
           <Tooltip title="Notifications">
-            <IconButton color="inherit" sx={{ ml: 1 }}>
+            <IconButton 
+              color="inherit" 
+              sx={{ ml: 1 }}
+              onClick={handleNotificationsOpen}
+            >
               <Badge badgeContent={4} color="primary">
                 <NotificationsIcon />
               </Badge>
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Help">
+            <IconButton color="inherit" sx={{ ml: 1 }}>
+              <HelpIcon />
             </IconButton>
           </Tooltip>
 
@@ -152,8 +201,8 @@ const Header: React.FC = () => {
 
         {/* Profile dropdown menu */}
         <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
+          anchorEl={profileAnchorEl}
+          open={Boolean(profileAnchorEl)}
           onClose={handleMenuClose}
           PaperProps={{
             elevation: 2,
@@ -191,6 +240,20 @@ const Header: React.FC = () => {
             Logout
           </MenuItem>
         </Menu>
+
+        {/* Notifications Panel */}
+        <NotificationsPanel 
+          anchorEl={notificationsAnchorEl}
+          open={Boolean(notificationsAnchorEl)}
+          onClose={handleNotificationsClose}
+        />
+
+        {/* Search Panel */}
+        <SearchPanel 
+          anchorEl={searchAnchorEl}
+          open={Boolean(searchAnchorEl)}
+          onClose={handleSearchClose}
+        />
       </Toolbar>
     </AppBar>
   );

@@ -11,7 +11,8 @@ import {
   Grid,
   Tooltip,
   Paper,
-  Divider
+  Divider,
+  Typography
 } from '@mui/material';
 import { 
   Send as SendIcon, 
@@ -83,6 +84,72 @@ const CommentEditor: React.FC<CommentEditorProps> = ({
       setContent('');
       setAttachments([]);
     }
+  };
+
+  const handleEmojiClick = (emoji: string) => {
+    setContent(prevContent => prevContent + emoji);
+    setEmojiAnchorEl(null);
+    
+    // Focus back on the text field after selecting an emoji
+    if (textFieldRef.current) {
+      textFieldRef.current.focus();
+    }
+  };
+
+  const handleFormatText = (format: 'bold' | 'italic' | 'underline' | 'link' | 'list') => {
+    if (!textFieldRef.current) return;
+
+    const start = textFieldRef.current.selectionStart;
+    const end = textFieldRef.current.selectionEnd;
+    const selectedText = content.substring(start, end);
+    
+    let newText = content;
+    let newCursorPosition = end;
+
+    switch (format) {
+      case 'bold':
+        newText = content.substring(0, start) + `**${selectedText}**` + content.substring(end);
+        newCursorPosition = end + 4; // 4 is the length of the added characters: **...**
+        break;
+      case 'italic':
+        newText = content.substring(0, start) + `*${selectedText}*` + content.substring(end);
+        newCursorPosition = end + 2; // 2 is the length of the added characters: *...*
+        break;
+      case 'underline':
+        newText = content.substring(0, start) + `__${selectedText}__` + content.substring(end);
+        newCursorPosition = end + 4; // 4 is the length of the added characters: __...__
+        break;
+      case 'link':
+        newText = content.substring(0, start) + `[${selectedText}](url)` + content.substring(end);
+        newCursorPosition = end + 7; // 7 is the length of the added characters: [...]()
+        break;
+      case 'list':
+        newText = content.substring(0, start) + `\n- ${selectedText}` + content.substring(end);
+        newCursorPosition = end + 3; // 3 is the length of the added characters: \n- 
+        break;
+    }
+
+    setContent(newText);
+    
+    // Reset cursor position after state update
+    setTimeout(() => {
+      if (textFieldRef.current) {
+        textFieldRef.current.focus();
+        textFieldRef.current.selectionStart = newCursorPosition;
+        textFieldRef.current.selectionEnd = newCursorPosition;
+      }
+    }, 0);
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const newFiles = Array.from(e.target.files);
+      setAttachments(prev => [...prev, ...newFiles]);
+    }
+  };
+
+  const handleRemoveAttachment = (index: number) => {
+    setAttachments(prev => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -370,69 +437,6 @@ const CommentEditor: React.FC<CommentEditorProps> = ({
       </Popover>
     </Box>
   );
-
-  const handleEmojiClick = (emoji: string) => {
-    setContent(prevContent => prevContent + emoji);
-    setEmojiAnchorEl(null);
-    
-    // Focus back on the text field after selecting an emoji
-    if (textFieldRef.current) {
-      textFieldRef.current.focus();
-    }
-  };
-
-  const handleFormatText = (format: 'bold' | 'italic' | 'underline' | 'link' | 'list') => {
-    if (!textFieldRef.current) return;
-
-    const start = textFieldRef.current.selectionStart;
-    const end = textFieldRef.current.selectionEnd;
-    const selectedText = content.substring(start, end);
-    
-    let newText = content;
-    let newCursorPosition = end;
-
-    switch (format) {
-      case 'bold':
-        newText = content.substring(0, start) + `**${selectedText}**` + content.substring(end);
-        newCursorPosition = end + 4; // 4 is the length of the added characters: **...**
-        break;
-      case 'italic':
-        newText = content.substring(0, start) + `*${selectedText}*` + content.substring(end);
-        newCursorPosition = end + 2; // 2 is the length of the added characters: *...*
-        break;
-      case 'underline':
-        newText = content.substring(0, start) + `__${selectedText}__` + content.substring(end);
-        newCursorPosition = end + 4; // 4 is the length of the added characters: __...__
-        break;
-      case 'link':
-        newText = content.substring(0, start) + `[${selectedText}](url)` + content.substring(end);
-        newCursorPosition = end + 7; // 7 is the length of the added characters: [...]()
-        break;
-      case 'list':
-        newText = content.substring(0, start) + `\n- ${selectedText}` + content.substring(end);
-        newCursorPosition = end + 3; // 3 is the length of the added characters: \n- 
-        break;
-    }
-
-    setContent(newText);
-    
-    // Reset cursor position after state update
-    setTimeout(() => {
-      if (textFieldRef.current) {
-        textFieldRef.current.focus();
-        textFieldRef.current.selectionStart = newCursorPosition;
-        textFieldRef.current.selectionEnd = newCursorPosition;
-      }
-    }, 0);
-  };ileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const newFiles = Array.from(e.target.files);
-      setAttachments(prev => [...prev, ...newFiles]);
-    }
-  };
-
-  const handleRemoveAttachment = (index: number) => {
-    setAttachments(prev => prev.filter((_, i) => i !== index));
-  };
+};
 
 export default CommentEditor;

@@ -27,6 +27,7 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -141,7 +142,7 @@ const Header: React.FC = () => {
               sx={{ ml: 1 }}
             >
               <Avatar 
-                src="/assets/images/avatar.png" 
+                src={user?.avatar || '/assets/images/avatar.svg'} 
                 alt={user?.name || 'User Profile'} 
                 sx={{ width: 36, height: 36 }}
               />

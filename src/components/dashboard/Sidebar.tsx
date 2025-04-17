@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography, Avatar } from '@mui/material';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { 
@@ -16,11 +16,14 @@ import {
   TaskAlt as ProjectsIcon,
   Folder as FilesIcon,
   CalendarMonth as CalendarIcon,
-  Settings as SettingsIcon
+  Settings as SettingsIcon,
+  Person as PersonIcon
 } from '@mui/icons-material';
+import { useAuth } from '@/hooks/useAuth';
 
 const navigationItems = [
   { text: 'Dashboard', icon: <DashboardIcon />, href: '/dashboard' },
+  { text: 'Profile', icon: <PersonIcon />, href: '/profile' },
   { text: 'Courses', icon: <CoursesIcon />, href: '/courses' },
   { text: 'Classroom', icon: <ClassroomIcon />, href: '/classroom' },
   { text: 'Assignments', icon: <AssignmentsIcon />, href: '/assignments' },
@@ -36,6 +39,7 @@ const navigationItems = [
 
 const Sidebar: React.FC = () => {
   const pathname = usePathname();
+  const { user } = useAuth();
 
   return (
     <Box
@@ -71,6 +75,50 @@ const Sidebar: React.FC = () => {
         >
           Ed<span style={{ color: '#a0c0ff' }}>nux</span>
         </Typography>
+      </Box>
+
+      {/* User Info */}
+      <Box
+        sx={{
+          py: 2, 
+          px: 2,
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1.5
+        }}
+      >
+        <Avatar 
+          src={user?.avatar || '/assets/images/avatar.svg'} 
+          alt={user?.name || 'User'} 
+          sx={{ 
+            width: 40, 
+            height: 40, 
+            border: '2px solid rgba(255, 255, 255, 0.5)' 
+          }}
+        />
+        <Box sx={{ overflow: 'hidden' }}>
+          <Typography 
+            variant="body1" 
+            noWrap 
+            sx={{ 
+              fontWeight: 600,
+              fontSize: '0.95rem' 
+            }}
+          >
+            {user?.name || 'User'}
+          </Typography>
+          <Typography 
+            variant="body2" 
+            noWrap
+            sx={{ 
+              color: 'rgba(255, 255, 255, 0.7)',
+              fontSize: '0.8rem' 
+            }}
+          >
+            {user?.email || 'user@example.com'}
+          </Typography>
+        </Box>
       </Box>
 
       {/* Navigation Items */}
